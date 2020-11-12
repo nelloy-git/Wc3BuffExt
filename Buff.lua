@@ -2,32 +2,29 @@
 -- Include
 --=========
 
-local lib_path = Lib.curPath()
-local lib_dep = Lib.curDepencies()
+local Class = LibManager.getDepency('LuaClass') or error('')
+---@type Wc3Handle
+local Wc3Handle = LibManager.getDepency('Wc3Handle') or error('')
+local TimedObj = Wc3Handle.TimedObj or error('')
+local Unit = Wc3Handle.Unit or error('')
+---@type Wc3Utils
+local Wc3Utils = LibManager.getDepency('Wc3Utils') or error('')
+local isTypeErr = Wc3Utils.isTypeErr or error('')
 
-local Class = lib_dep.Class or error('')
----@type HandleLib
-local HandleLib = lib_dep.Handle or error('')
-local TimedObj = HandleLib.TimedObj or error('')
-local Unit = HandleLib.Unit or error('')
----@type UtilsLib
-local UtilsLib = lib_dep.Utils or error('')
-local isTypeErr = UtilsLib.isTypeErr or error('')
-
----@type BuffTypeClass
-local BuffType = require(lib_path..'Type') or error('')
+---@type BuffExtTypeClass
+local BuffExtType = require('Type') or error('')
 
 --=======
 -- Class
 --=======
 
-local Buff = Class.new('Buff', TimedObj)
----@class Buff : TimedObj
-local public = Buff.public
----@class BuffClass : TimedObjClass
-local static = Buff.static
----@type BuffClass
-local override = Buff.override
+local BuffExt = Class.new('Buff', TimedObj)
+---@class BuffExt : TimedObj
+local public = BuffExt.public
+---@class BuffExtClass : TimedObjClass
+local static = BuffExt.static
+---@type BuffExtClass
+local override = BuffExt.override
 local private = {}
 
 --=========
@@ -36,17 +33,17 @@ local private = {}
 
 ---@param source Unit
 ---@param target Unit
----@param buff_type BuffType
+---@param buff_type BuffExtType
 ---@param user_data any
----@param child Buff | nil
----@return Buff
+---@param child BuffExt | nil
+---@return BuffExt
 function override.new(source, target, buff_type, user_data, child)
     isTypeErr(source, Unit, 'source')
     isTypeErr(target, Unit, 'target')
-    isTypeErr(buff_type, BuffType, 'buff_type')
-    if child then isTypeErr(child, Buff, 'child') end
+    isTypeErr(buff_type, BuffExtType, 'buff_type')
+    isTypeErr(child, {BuffExt, 'nil'}, 'child')
 
-    local instance = child or Class.allocate(Buff)
+    local instance = child or Class.allocate(BuffExt)
     instance = TimedObj.new(instance)
 
     private.newData(instance, source, target, buff_type, user_data)
@@ -60,36 +57,43 @@ end
 
 ---@return Unit
 function public:getSource()
+    isTypeErr(self, BuffExt, 'self')
     return private.data[self].source
 end
 
 ---@return Unit
 function public:getTarget()
+    isTypeErr(self, BuffExt, 'self')
     return private.data[self].target
 end
 
----@return BuffType
+---@return BuffExtType
 function public:getType()
+    isTypeErr(self, BuffExt, 'self')
     return private.data[self].buff_type
 end
 
 ---@return any
 function public:getUserData()
+    isTypeErr(self, BuffExt, 'self')
     return private.data[self].user_data
 end
 
 ---@return string
 function public:getName()
+    isTypeErr(self, BuffExt, 'self')
     return private.data[self].buff_type:getName(self)
 end
 
 ---@return string
 function public:getIcon()
+    isTypeErr(self, BuffExt, 'self')
     return private.data[self].buff_type:getIcon(self)
 end
 
 ---@return string
 function public:getTooltip()
+    isTypeErr(self, BuffExt, 'self')
     return private.data[self].buff_type:getTooltip(self)
 end
 
@@ -99,10 +103,10 @@ end
 
 private.data = setmetatable({}, {__mode = 'k'})
 
----@param self Buff
+---@param self BuffExt
 ---@param source Unit
 ---@param target Unit
----@param buff_type BuffType
+---@param buff_type BuffExtType
 ---@param user_data any
 function private.newData(self, source, target, buff_type, user_data)
     local priv = {

@@ -2,18 +2,14 @@
 -- Include
 --=========
 
-local lib_path = Lib.curPath()
-local lib_dep = Lib.curDepencies()
-
 --========
 -- Module
 --========
 
----@class BuffSettings
-local BuffSettings = {}
+---@class Wc3BuffExtSettings
+local Settings = {}
 
-BuffSettings.TimerPeriod = 0.05
+Settings.TimerPeriod = 0.05
+Settings.ShieldPriority = -1 -- Parameter damage event priority based
 
-BuffSettings.ShieldPriority = -1 -- Parameter damage event priority based
-
-return BuffSettings
+return Settings
