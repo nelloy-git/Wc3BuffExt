@@ -14,25 +14,25 @@ LibManager.addDepency('Wc3Utils', 'https://github.com/nelloy-git/Wc3Utils.git')
 --=====
 -- API
 --=====
-
+--[[
 ---@class Wc3BuffExt
 local Wc3BuffExt = {}
 
----@type BuffContainerClass
+---@type BuffExtContainerClass
 Wc3BuffExt.Container = require('Container') or error('')
----@type BuffTypeClass
+---@type BuffExtTypeClass
 Wc3BuffExt.Type = require('Type') or error('')
 
----@type BuffClass
-local Buff = require('Buff') or error('')
-Wc3BuffExt.getBuffLoopPeriod = Buff.getPeriod
+---@type BuffExtClass
+local BuffExt = require('Buff') or error('')
+Wc3BuffExt.getBuffLoopPeriod = BuffExt.getPeriod
 
----@type BuffEffectShield
+---@type BuffExtEffectShield
 local Shield = require('Effects.Shield') or error('')
 Wc3BuffExt.addShield = Shield.add
 Wc3BuffExt.getShield = Shield.get
 Wc3BuffExt.getMaxShield = Shield.getMax
-
+]]
 LibManager.endLib()
 
 return Wc3BuffExt
