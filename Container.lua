@@ -2,33 +2,33 @@
 -- Include
 --=========
 
-local lib_path = Lib.curPath()
-local lib_dep = Lib.curDepencies()
+local Class = LibManager.getDepency('LuaClass') or error('')
+---@type Wc3Handle
+local Wc3Handle = LibManager.getDepency('Wc3Handle') or error('')
+local Unit = Wc3Handle.Unit or error('')
+---@type Wc3Utils
+local Wc3Utils = LibManager.getDepency('Wc3Utils') or error('')
+local Action = Wc3Utils.Action or error('')
+local ActionList = Wc3Utils.ActionList or error('')
+local isTypeErr = Wc3Utils.isTypeErr or error('')
+local Log = Wc3Utils.Log or error('')
 
-local Class = lib_dep.Class or error('')
----@type HandleLib
-local HandleLib = lib_dep.Handle or error('')
-local Unit = HandleLib.Unit or error('')
----@type UtilsLib
-local UtilsLib = lib_dep.Utils or error('')
-local ActionList = UtilsLib.ActionList or error('')
-local isTypeErr = UtilsLib.isTypeErr or error('')
-local Log = UtilsLib.Log or error('')
-
----@type BuffClass
-local Buff = require(lib_path..'.Buff') or error('')
+---@type BuffExtClass
+local BuffExt = require('BuffExt') or error('')
+---@type BuffExtTypeClass
+local BuffExtType = require('Type') or error('')
 
 --=======
 -- Class
 --=======
 
-local BuffContainer = Class.new('BuffContainer')
----@class BuffContainer
-local public = BuffContainer.public
----@class BuffContainerClass
-local static = BuffContainer.static
----@type BuffContainerClass
-local override = BuffContainer.override
+local BuffExtContainer = Class.new('BuffExtContainer')
+---@class BuffExtContainer
+local public = BuffExtContainer.public
+---@class BuffExtContainerClass
+local static = BuffExtContainer.static
+---@type BuffExtContainerClass
+local override = BuffExtContainer.override
 local private = {}
 
 --=========
@@ -36,13 +36,13 @@ local private = {}
 --=========
 
 ---@param owner Unit
----@param child BuffContainer | nil
----@return BuffContainer
+---@param child BuffExtContainer | nil
+---@return BuffExtContainer
 function static.new(owner, child)
     isTypeErr(owner, Unit, 'owner')
-    if child then isTypeErr(child, BuffContainer, 'child') end
+    isTypeErr(child, {BuffExtContainer, 'nil'}, 'child')
 
-    local instance = child or Class.allocate(BuffContainer)
+    local instance = child or Class.allocate(BuffExtContainer)
     private.newData(instance, owner)
 
     return instance
@@ -56,16 +56,19 @@ end
 -- Public
 --========
 
----@param buff_type Buff
+---@param buff_type BuffExtType
 ---@param source Unit
 ---@param time number
 ---@param user_data any
 ---@return boolean
-function public:add(buff_type, source, time, user_data)
+function public:add(source, buff_type, time, user_data)
+    isTypeErr(self, BuffExtContainer, 'self')
+    isTypeErr(buff_type, BuffExtType, 'buff_type')
+    isTypeErr(source, Unit, 'source')
+    isTypeErr(time, 'number', 'time')
     local priv = private.data[self]
 
-    local buff = Buff.new(source, priv.owner, buff_type, user_data)
-
+    local buff = BuffExt.new(source, priv.owner, buff_type, user_data)
     buff:addCancelAction(private.removeBuff)
     buff:addFinishAction(private.removeBuff)
     buff:start(time)
@@ -77,17 +80,21 @@ end
 
 ---@return number
 function public:count()
+    isTypeErr(self, BuffExtContainer, 'self')
     return #private.data[self].list
 end
 
----@param i number
----@return Buff | nil
-function public:get(i)
-    return private.data[self].list[i]
+---@param pos number
+---@return BuffExt | nil
+function public:get(pos)
+    isTypeErr(self, BuffExtContainer, 'self')
+    isTypeErr(pos, 'number', 'pos')
+    return private.data[self].list[pos]
 end
 
 ---@return table
 function public:getAll()
+    isTypeErr(self, BuffExtContainer, 'self')
     local priv = private.data[self]
 
     local copy = {}
@@ -97,17 +104,21 @@ function public:getAll()
     return copy
 end
 
----@alias BuffContainerCallback fun(container:BuffContainer)
+---@alias BuffExtContainerCallback fun(container:BuffExtContainer)
 
----@param callback BuffContainerCallback
+---@param callback BuffExtContainerCallback
 ---@return Action
 function public:addChangedAction(callback)
+    isTypeErr(self, BuffExtContainer, 'self')
+    isTypeErr(callback, 'function', 'callback')
     return private.data[self].changed_actions:add(callback)
 end
 
 ---@param action Action
 ---@return boolean
 function public:removeAction(action)
+    isTypeErr(self, BuffExtContainer, 'self')
+    isTypeErr(action, Action, 'action')
     return private.data[self].changed_actions:remove(action)
 end
 
@@ -119,7 +130,7 @@ private.data = setmetatable({}, {__mode = 'k'})
 private.owner2container = setmetatable({}, {__mode = 'k'})
 private.buffs2container = setmetatable({}, {__mode = 'k'})
 
----@param self BuffContainer
+---@param self BuffExtContainer
 ---@param owner Unit
 function private.newData(self, owner)
     local priv = {
@@ -133,7 +144,7 @@ function private.newData(self, owner)
 end
 
 function private.removeBuff(buff)
-    ---@type BuffContainer
+    ---@type BuffExtContainer
     local self = private.buffs2container[buff]
     local priv = private.data[self]
 
@@ -144,7 +155,8 @@ function private.removeBuff(buff)
             return
         end
     end
-    Log:err('Removing buff is not found')
+
+    Log:err(tostring(BuffExtContainer)..': buff for removal is not found')
 end
 
 return static

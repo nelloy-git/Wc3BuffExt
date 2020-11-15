@@ -6,7 +6,6 @@ local Class = LibManager.getDepency('LuaClass') or error('')
 ---@type Wc3Utils
 local Wc3Utils = LibManager.getDepency('Wc3Utils') or error('')
 local isTypeErr = Wc3Utils.isTypeErr or error('')
-local Log = Wc3Utils.Log or error('')
 
 --=======
 -- Class

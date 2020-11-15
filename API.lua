@@ -1,14 +1,11 @@
-LibManager.startLib('Wc3AbilityExt')
+LibManager.startLib('Wc3BuffExt')
 
 --===========
 -- Depencies
 --===========
 
 LibManager.addDepency('LuaClass', 'https://github.com/nelloy-git/LuaClass.git')
-LibManager.addDepency('Wc3Binary', 'https://github.com/nelloy-git/Wc3Binary.git')
-LibManager.addDepency('Wc3Damage', 'https://github.com/nelloy-git/Wc3Damage.git')
 LibManager.addDepency('Wc3Handle', 'https://github.com/nelloy-git/Wc3Handle.git')
-LibManager.addDepency('Wc3Parameter', 'https://github.com/nelloy-git/Wc3Parameter.git')
 LibManager.addDepency('Wc3Utils', 'https://github.com/nelloy-git/Wc3Utils.git')
 
 --=====
@@ -18,20 +15,14 @@ LibManager.addDepency('Wc3Utils', 'https://github.com/nelloy-git/Wc3Utils.git')
 ---@class Wc3BuffExt
 local Wc3BuffExt = {}
 
----@type BuffContainerClass
+---@type BuffExtContainerClass
 Wc3BuffExt.Container = require('Container') or error('')
----@type BuffTypeClass
+---@type BuffExtTypeClass
 Wc3BuffExt.Type = require('Type') or error('')
 
----@type BuffClass
-local Buff = require('Buff') or error('')
-Wc3BuffExt.getBuffLoopPeriod = Buff.getPeriod
-
----@type BuffEffectShield
-local Shield = require('Effects.Shield') or error('')
-Wc3BuffExt.addShield = Shield.add
-Wc3BuffExt.getShield = Shield.get
-Wc3BuffExt.getMaxShield = Shield.getMax
+---@type BuffExtClass
+local Buff = require('BuffExt') or error('')
+Wc3BuffExt.getBuffPeriod = Buff.getPeriod
 
 LibManager.endLib()
 
